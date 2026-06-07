@@ -107,23 +107,40 @@ Esempio:
 
 Dopo il riscatto:
 - le visite storiche NON vengono cancellate
-- il ciclo premio riparte da 0/10
+- il sistema scala solo le 10 visite del premio
+- eventuali visite in piu restano valide per il ciclo successivo
 - lo storico visite resta conservato
 - la data dell'ultimo premio consegnato resta visibile nella scheda cliente
 
 Esempio pratico:
 
 Prima del premio:
-Visite storiche: 10
-Ciclo premio: 10/10
+Visite storiche: 13
+Ciclo premio: 13/10
 
 Dopo "Riscatta premio":
-Visite storiche: 10
-Ciclo premio: 0/10
+Visite storiche: 13
+Ciclo premio: 3/10
 
 Alla visita successiva:
-Visite storiche: 11
-Ciclo premio: 1/10
+Visite storiche: 14
+Ciclo premio: 4/10
+
+
+SE SI SEGNA UN CHECK-IN PER ERRORE
+----------------------------------
+
+Nella scheda cliente esiste il pulsante:
+Togli ultimo check-in
+
+Usalo se per sbaglio hai premuto "Segna check-in" una volta di troppo.
+
+Il sistema rimuove solo l'ultima visita registrata e aggiorna automaticamente:
+- visite storiche
+- ciclo premio
+- ultima visita cliente
+
+Importante: usare questo pulsante solo per correggere errori appena fatti.
 
 
 NOTE INTERNE
@@ -311,6 +328,6 @@ FLUSSO CONSIGLIATO AL BANCO
 5. Segna il check-in.
 6. Se il cliente e a 10/10, consegna il premio.
 7. Premi "Riscatta premio".
-8. Il ciclo riparte da 0/10.
+8. Il sistema scala 10 visite e lascia eventuali visite extra nel ciclo successivo.
 
 Fine.

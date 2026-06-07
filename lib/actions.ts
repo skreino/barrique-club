@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 
 function stringValue(formData: FormData, key: string) {
@@ -134,26 +135,67 @@ export async function redeemReward(formData: FormData) {
     .limit(1)
     .maybeSingle();
 
-  let cycleQuery = supabase
+  let checkinsQuery = supabase
     .from("checkins")
-    .select("id", { count: "exact", head: true })
-    .eq("customer_id", customerId);
+    .select("created_at")
+    .eq("customer_id", customerId)
+    .order("created_at", { ascending: true })
+    .limit(reward.required_checkins);
 
   if (lastRedemption?.redeemed_at) {
-    cycleQuery = cycleQuery.gt("created_at", lastRedemption.redeemed_at);
+    checkinsQuery = checkinsQuery.gt("created_at", lastRedemption.redeemed_at);
   }
 
-  const { count } = await cycleQuery;
-  if ((count ?? 0) < reward.required_checkins) return;
+  const { data: checkinsToSpend } = await checkinsQuery;
+  if (!checkinsToSpend || checkinsToSpend.length < reward.required_checkins) return;
+
+  const cutoffCheckin = checkinsToSpend[reward.required_checkins - 1];
 
   await supabase.from("customer_rewards").insert({
     customer_id: customerId,
     reward_id: reward.id,
     redeemed: true,
-    redeemed_at: new Date().toISOString()
+    redeemed_at: cutoffCheckin.created_at
   });
 
   revalidatePath("/admin");
+  revalidatePath("/club");
+  revalidatePath(`/admin/customers/${customerId}`);
+}
+
+export async function removeLastCheckin(formData: FormData) {
+  const supabase = await createClient();
+  const adminSupabase = createAdminClient();
+  const customerId = stringValue(formData, "customer_id");
+  if (!adminSupabase) return;
+
+  const { data: latestCheckin } = await adminSupabase
+    .from("checkins")
+    .select("id")
+    .eq("customer_id", customerId)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (!latestCheckin) return;
+
+  await adminSupabase.from("checkins").delete().eq("id", latestCheckin.id);
+
+  const { data: newLatestCheckin } = await adminSupabase
+    .from("checkins")
+    .select("created_at")
+    .eq("customer_id", customerId)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  await adminSupabase
+    .from("customers")
+    .update({ last_visit_at: newLatestCheckin?.created_at ?? null })
+    .eq("id", customerId);
+
+  revalidatePath("/admin");
+  revalidatePath("/club");
   revalidatePath(`/admin/customers/${customerId}`);
 }
 

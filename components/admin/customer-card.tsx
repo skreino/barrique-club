@@ -9,6 +9,7 @@ type Customer = {
   last_name: string;
   phone: string | null;
   email: string;
+  birthday: string | null;
   favorite_category: string | null;
   last_visit_at: string | null;
   customer_tags?: { tags: { id: string; name: string } | { id: string; name: string }[] | null }[];
@@ -36,6 +37,9 @@ export function CustomerCard({ customer }: { customer: Customer }) {
           </span>
           <span className="rounded-full border border-crema/10 px-3 py-1 text-pewter">
             Ultima visita: {formatShortDate(customer.last_visit_at)}
+          </span>
+          <span className="rounded-full border border-crema/10 px-3 py-1 text-pewter">
+            Compleanno: {formatShortDate(customer.birthday)}
           </span>
           {customer.customer_tags?.map((item) => {
             const tag = Array.isArray(item.tags) ? item.tags[0] : item.tags;

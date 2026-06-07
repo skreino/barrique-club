@@ -1,11 +1,11 @@
 ﻿import Link from "next/link";
 import { notFound } from "next/navigation";
-import { MessageCircle, Plus, Tag, Wine } from "lucide-react";
+import { MessageCircle, Minus, Plus, Tag, Wine } from "lucide-react";
 import { requireAdmin } from "@/lib/auth";
 import { Button, ButtonLink } from "@/components/ui/button";
 import { Card, SectionTitle } from "@/components/ui/card";
 import { Field, inputClass } from "@/components/ui/form";
-import { addCheckin, addNote, addTagToCustomer, redeemReward, removeTagFromCustomer } from "@/lib/actions";
+import { addCheckin, addNote, addTagToCustomer, redeemReward, removeLastCheckin, removeTagFromCustomer } from "@/lib/actions";
 import { favoriteLabels, formatDate, whatsappUrl } from "@/lib/utils";
 
 export default async function CustomerDetailPage({
@@ -101,6 +101,13 @@ export default async function CustomerDetailPage({
             <Button className="w-full gap-2" type="submit">
               <Plus className="h-4 w-4" />
               Segna check-in
+            </Button>
+          </form>
+          <form action={removeLastCheckin}>
+            <input type="hidden" name="customer_id" value={customer.id} />
+            <Button className="w-full gap-2" type="submit" variant="ghost" disabled={!checkins?.length}>
+              <Minus className="h-4 w-4" />
+              Togli ultimo check-in
             </Button>
           </form>
           <div className="rounded-md border border-champagne/20 bg-crema/5 p-4">

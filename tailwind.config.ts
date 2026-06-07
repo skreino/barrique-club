@@ -19,8 +19,8 @@ const config: Config = {
         smoke: "#302722"
       },
       fontFamily: {
-        display: ["var(--font-display)", "Georgia", "serif"],
-        body: ["var(--font-body)", "Georgia", "serif"]
+        display: ["var(--font-display)", "Inter", "sans-serif"],
+        body: ["var(--font-body)", "Inter", "sans-serif"]
       },
       boxShadow: {
         cellar: "0 24px 80px rgba(0, 0, 0, 0.34)",

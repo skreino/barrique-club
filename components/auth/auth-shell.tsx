@@ -9,19 +9,19 @@ export function AuthShell({ children, title, text }: { children: React.ReactNode
         alt=""
         fill
         sizes="100vw"
-        className="-z-20 object-cover opacity-20"
+        className="-z-20 object-cover opacity-24"
         priority
       />
-      <div className="absolute inset-0 -z-10 bg-gradient-to-b from-espresso/70 via-espresso/92 to-espresso" />
+      <div className="absolute inset-0 -z-10 bg-[linear-gradient(180deg,rgba(18,13,11,0.62),rgba(18,13,11,0.94)_48%,rgba(18,13,11,1))]" />
       <div className="mx-auto flex min-h-[calc(100vh-3rem)] w-full max-w-md flex-col justify-center">
         <div className="mb-7 flex justify-center">
           <LogoMark size={118} />
         </div>
-        <div className="barrique-panel rounded-lg p-5">
-          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-champagne">
+        <div className="barrique-panel soft-rise rounded-lg p-5">
+          <p className="text-xs font-bold uppercase text-champagne">
             Barrique Club
           </p>
-          <h1 className="mt-3 font-display text-4xl font-semibold leading-none text-vellum">
+          <h1 className="mt-3 font-display text-4xl font-bold leading-tight text-vellum">
             {title}
           </h1>
           <p className="mt-3 text-sm leading-6 text-pewter">{text}</p>

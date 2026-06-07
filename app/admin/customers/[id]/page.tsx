@@ -5,7 +5,7 @@ import { requireAdmin } from "@/lib/auth";
 import { Button, ButtonLink } from "@/components/ui/button";
 import { Card, SectionTitle } from "@/components/ui/card";
 import { Field, inputClass } from "@/components/ui/form";
-import { addCheckin, addNote, addTagToCustomer, removeTagFromCustomer } from "@/lib/actions";
+import { addCheckin, addNote, addTagToCustomer, redeemReward, removeTagFromCustomer } from "@/lib/actions";
 import { favoriteLabels, formatDate, whatsappUrl } from "@/lib/utils";
 
 export default async function CustomerDetailPage({
@@ -16,25 +16,50 @@ export default async function CustomerDetailPage({
   const { id } = await params;
   const { supabase } = await requireAdmin();
 
-  const [{ data: customer }, { data: checkins }, { data: notes }, { data: tags }, { count: visits }] =
+  const [{ data: customer }, { data: checkins }, { data: notes }, { data: tags }, { count: visits }, { data: reward }] =
     await Promise.all([
       supabase.from("customers").select("*").eq("id", id).single(),
       supabase.from("checkins").select("*").eq("customer_id", id).order("created_at", { ascending: false }).limit(12),
       supabase.from("notes").select("*").eq("customer_id", id).order("created_at", { ascending: false }),
       supabase.from("customer_tags").select("tag_id, tags(id, name)").eq("customer_id", id),
-      supabase.from("checkins").select("id", { count: "exact", head: true }).eq("customer_id", id)
+      supabase.from("checkins").select("id", { count: "exact", head: true }).eq("customer_id", id),
+      supabase.from("rewards").select("*").eq("active", true).order("required_checkins").limit(1).single()
     ]);
 
   if (!customer) notFound();
 
   const name = `${customer.first_name} ${customer.last_name}`.trim();
   const whatsApp = whatsappUrl(customer.phone, customer.first_name);
+  const requiredCheckins = reward?.required_checkins ?? 10;
+  const { data: lastRedemption } = reward
+    ? await supabase
+        .from("customer_rewards")
+        .select("redeemed_at")
+        .eq("customer_id", customer.id)
+        .eq("reward_id", reward.id)
+        .eq("redeemed", true)
+        .order("redeemed_at", { ascending: false })
+        .limit(1)
+        .maybeSingle()
+    : { data: null };
+
+  let cycleQuery = supabase
+    .from("checkins")
+    .select("id", { count: "exact", head: true })
+    .eq("customer_id", customer.id);
+
+  if (lastRedemption?.redeemed_at) {
+    cycleQuery = cycleQuery.gt("created_at", lastRedemption.redeemed_at);
+  }
+
+  const { count: cycleVisits } = await cycleQuery;
+  const rewardReady = (cycleVisits ?? 0) >= requiredCheckins;
 
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <SectionTitle eyebrow="Scheda cliente" title={name}>
-          {favoriteLabels[customer.favorite_category] ?? "Preferenza da scoprire"} Â- {customer.email}
+          {favoriteLabels[customer.favorite_category] ?? "Preferenza da scoprire"} - {customer.email}
         </SectionTitle>
         {whatsApp ? (
           <ButtonLink href={whatsApp} target="_blank" rel="noreferrer" className="gap-2">
@@ -78,6 +103,36 @@ export default async function CustomerDetailPage({
               Segna check-in
             </Button>
           </form>
+          <div className="rounded-md border border-champagne/20 bg-crema/5 p-4">
+            <div className="flex items-end justify-between gap-3">
+              <div>
+                <p className="text-sm text-pewter">Ciclo premio</p>
+                <p className="font-display text-3xl text-vellum">
+                  {cycleVisits ?? 0}/{requiredCheckins}
+                </p>
+              </div>
+              <p className="text-right text-xs leading-5 text-champagne">
+                {rewardReady ? "Premio pronto" : "Non ancora pronto"}
+              </p>
+            </div>
+            <div className="mt-3 h-2 overflow-hidden rounded-full bg-crema/10">
+              <div
+                className="h-full rounded-full bg-champagne"
+                style={{ width: `${Math.min(100, Math.round(((cycleVisits ?? 0) / requiredCheckins) * 100))}%` }}
+              />
+            </div>
+            <form action={redeemReward} className="mt-4">
+              <input type="hidden" name="customer_id" value={customer.id} />
+              <Button className="w-full" type="submit" variant={rewardReady ? "primary" : "ghost"} disabled={!rewardReady}>
+                Riscatta premio
+              </Button>
+            </form>
+            {lastRedemption?.redeemed_at ? (
+              <p className="mt-3 text-xs leading-5 text-pewter">
+                Ultimo premio consegnato: {formatDate(lastRedemption.redeemed_at)}
+              </p>
+            ) : null}
+          </div>
         </Card>
 
         <Card>
@@ -94,7 +149,7 @@ export default async function CustomerDetailPage({
                     <input type="hidden" name="customer_id" value={customer.id} />
                     <input type="hidden" name="tag_id" value={item.tag_id} />
                     <button className="rounded-full bg-crema/10 px-3 py-1 text-xs text-crema" type="submit">
-                      {tag.name} Ã—
+                      {tag.name} x
                     </button>
                   </form>
                 ) : null;

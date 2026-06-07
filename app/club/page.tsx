@@ -36,6 +36,28 @@ export default async function ClubPage() {
   ]);
 
   const required = reward?.required_checkins ?? 10;
+  const { data: lastRedemption } = reward
+    ? await supabase
+        .from("customer_rewards")
+        .select("redeemed_at")
+        .eq("customer_id", customer.id)
+        .eq("reward_id", reward.id)
+        .eq("redeemed", true)
+        .order("redeemed_at", { ascending: false })
+        .limit(1)
+        .maybeSingle()
+    : { data: null };
+
+  let cycleQuery = supabase
+    .from("checkins")
+    .select("id", { count: "exact", head: true })
+    .eq("customer_id", customer.id);
+
+  if (lastRedemption?.redeemed_at) {
+    cycleQuery = cycleQuery.gt("created_at", lastRedemption.redeemed_at);
+  }
+
+  const { count: cycleVisits } = await cycleQuery;
   const fullName = `${customer.first_name} ${customer.last_name}`.trim();
 
   return (
@@ -60,7 +82,15 @@ export default async function ClubPage() {
         </div>
       </Card>
 
-      <ProgressCard visits={visits ?? 0} required={required} />
+      <ProgressCard visits={cycleVisits ?? 0} required={required} />
+
+      <Card>
+        <p className="text-sm text-pewter">Visite storiche</p>
+        <p className="mt-2 font-display text-4xl text-vellum">{visits ?? 0}</p>
+        <p className="mt-2 text-sm leading-6 text-pewter">
+          Il premio riparte da zero ogni volta che viene consegnato al banco.
+        </p>
+      </Card>
 
       <Card>
         <div className="mb-4 flex items-center justify-between">

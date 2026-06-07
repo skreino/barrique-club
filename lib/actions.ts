@@ -110,6 +110,53 @@ export async function addCheckin(formData: FormData) {
   revalidatePath(`/admin/customers/${customerId}`);
 }
 
+export async function redeemReward(formData: FormData) {
+  const supabase = await createClient();
+  const customerId = stringValue(formData, "customer_id");
+
+  const { data: reward } = await supabase
+    .from("rewards")
+    .select("*")
+    .eq("active", true)
+    .order("required_checkins")
+    .limit(1)
+    .single();
+
+  if (!reward) return;
+
+  const { data: lastRedemption } = await supabase
+    .from("customer_rewards")
+    .select("redeemed_at")
+    .eq("customer_id", customerId)
+    .eq("reward_id", reward.id)
+    .eq("redeemed", true)
+    .order("redeemed_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  let cycleQuery = supabase
+    .from("checkins")
+    .select("id", { count: "exact", head: true })
+    .eq("customer_id", customerId);
+
+  if (lastRedemption?.redeemed_at) {
+    cycleQuery = cycleQuery.gt("created_at", lastRedemption.redeemed_at);
+  }
+
+  const { count } = await cycleQuery;
+  if ((count ?? 0) < reward.required_checkins) return;
+
+  await supabase.from("customer_rewards").insert({
+    customer_id: customerId,
+    reward_id: reward.id,
+    redeemed: true,
+    redeemed_at: new Date().toISOString()
+  });
+
+  revalidatePath("/admin");
+  revalidatePath(`/admin/customers/${customerId}`);
+}
+
 export async function addNote(formData: FormData) {
   const supabase = await createClient();
   const customerId = stringValue(formData, "customer_id");

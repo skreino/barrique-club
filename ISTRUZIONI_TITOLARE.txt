@@ -1,0 +1,316 @@
+BARRIQUE CLUB - GUIDA PER IL TITOLARE
+====================================
+
+App online:
+https://barrique-club.vercel.app
+
+Area admin:
+https://barrique-club.vercel.app/admin
+
+Repository GitHub:
+https://github.com/skreino/barrique-club
+
+
+ACCESSO ADMIN
+-------------
+
+Email:
+admin@caffebarrique.it
+
+Password:
+FabioMichela2026!
+
+Consiglio: conservare questa password in un posto sicuro. Se viene condivisa con lo staff, cambiarla quando una persona non deve piu avere accesso.
+
+
+A COSA SERVE BARRIQUE CLUB
+--------------------------
+
+Barrique Club e una fidelity card digitale per i clienti del Caffe Barrique.
+
+Ogni cliente puo:
+- registrarsi
+- accedere alla sua card digitale
+- vedere il proprio QR personale
+- vedere quante visite ha fatto nel ciclo premio
+- vedere lo storico visite
+- aggiornare il proprio profilo
+
+Il titolare puo:
+- vedere tutti i clienti
+- cercare un cliente per nome, email o telefono
+- segnare una visita/check-in
+- vedere il progresso premio
+- riscattare un premio quando il cliente arriva a 10 visite
+- aggiungere note interne
+- aggiungere tag
+- aprire WhatsApp con messaggio precompilato
+- vedere compleanni del mese
+- vedere clienti inattivi da 30 giorni
+
+
+COME SI REGISTRA UN CLIENTE
+---------------------------
+
+Il cliente apre:
+https://barrique-club.vercel.app/register
+
+Compila:
+- nome
+- cognome
+- email
+- telefono
+- data di nascita
+- preferenza principale: colazione, aperitivo, vino o cocktail
+- consenso marketing
+- password
+
+Dopo la registrazione puo accedere da:
+https://barrique-club.vercel.app/login
+
+
+COME AGGIORNARE LA CARD DI UN CLIENTE
+-------------------------------------
+
+Quando un cliente viene al locale:
+
+1. Entra come admin:
+   https://barrique-club.vercel.app/admin
+
+2. Vai su "Clienti".
+
+3. Cerca il cliente per nome, email o telefono.
+
+4. Apri la scheda cliente.
+
+5. Premi "Segna check-in".
+
+Questo aggiunge una visita alla card del cliente.
+
+Il cliente vedra automaticamente:
+- una visita in piu
+- la barra premio aggiornata
+- la nuova visita nello storico
+
+
+COME FUNZIONA IL PREMIO DA 10 VISITE
+------------------------------------
+
+Il premio attivo e:
+Premio Barrique - 10 visite
+
+Esempio:
+- Gabriele Rea arriva a 10/10 visite
+- nella scheda admin il titolare vede "Premio pronto"
+- il titolare consegna il bicchiere/premio
+- il titolare preme "Riscatta premio"
+
+Dopo il riscatto:
+- le visite storiche NON vengono cancellate
+- il ciclo premio riparte da 0/10
+- lo storico visite resta conservato
+- la data dell'ultimo premio consegnato resta visibile nella scheda cliente
+
+Esempio pratico:
+
+Prima del premio:
+Visite storiche: 10
+Ciclo premio: 10/10
+
+Dopo "Riscatta premio":
+Visite storiche: 10
+Ciclo premio: 0/10
+
+Alla visita successiva:
+Visite storiche: 11
+Ciclo premio: 1/10
+
+
+NOTE INTERNE
+------------
+
+Nella scheda cliente puoi aggiungere note che vede solo l'admin.
+
+Esempi:
+- Preferisce rosso fermo
+- Ama aperitivi tranquilli
+- Chiede spesso tavolo esterno
+- Cliente da invitare per degustazioni
+
+Le note aiutano a ricordare preferenze e dettagli utili.
+
+
+TAG CLIENTE
+-----------
+
+I tag servono per organizzare i clienti.
+
+Esempi:
+- vip
+- vino
+- aperitivo
+- colazione
+- cocktail
+- compleanno
+- abituale
+
+Puoi aggiungere o rimuovere tag dalla scheda cliente.
+
+
+WHATSAPP
+--------
+
+Se il cliente ha un numero di telefono, nella scheda cliente trovi il pulsante WhatsApp.
+
+Il pulsante apre una chat con un messaggio gia pronto.
+Prima di inviarlo puoi modificarlo.
+
+
+COMPLEANNI
+----------
+
+La pagina "Compleanni" mostra i clienti che compiono gli anni nel mese corrente.
+
+Uso consigliato:
+- mandare un messaggio personale
+- offrire un piccolo invito
+- proporre un aperitivo o un calice
+
+
+CLIENTI INATTIVI
+----------------
+
+La pagina "Inattivi" mostra clienti che:
+- non hanno mai fatto un check-in
+- oppure non passano da almeno 30 giorni
+
+Uso consigliato:
+- ricontattarli con garbo
+- invitarli a tornare per un aperitivo
+- proporre una serata o degustazione
+
+
+SUPABASE
+--------
+
+Supabase e il database del progetto.
+
+Progetto Supabase:
+barrique-club
+
+Project URL:
+https://mqzdxijpyitwwoyhoytu.supabase.co
+
+Nel database sono salvati:
+- utenti
+- profili
+- clienti
+- visite/check-in
+- note
+- tag
+- premi riscattati
+
+Non cancellare tabelle o policy se non sai esattamente cosa stai facendo.
+
+
+VERCEL
+------
+
+Vercel ospita il sito online.
+
+Dominio pubblico:
+https://barrique-club.vercel.app
+
+Il progetto Vercel e collegato al repository GitHub.
+Quando viene aggiornato il codice su GitHub, Vercel puo ridistribuire automaticamente il sito.
+
+
+GITHUB
+------
+
+Repository:
+https://github.com/skreino/barrique-club
+
+Qui si trova il codice sorgente della web app.
+
+
+COSA FARE SE NON FUNZIONA IL LOGIN
+----------------------------------
+
+Controllare:
+
+1. Email e password corrette.
+
+2. Che l'utente esista in Supabase > Authentication > Users.
+
+3. Che l'utente admin abbia role = admin nella tabella profiles.
+
+Query utile:
+
+update public.profiles
+set role = 'admin'
+where email = 'admin@caffebarrique.it';
+
+
+COSA FARE SE UN CLIENTE NON VEDE LA CARD
+----------------------------------------
+
+Controllare che il cliente:
+
+1. abbia completato la registrazione
+2. riesca ad accedere con email e password
+3. abbia un record nella tabella customers
+
+Di solito il record cliente viene creato automaticamente alla registrazione.
+
+
+CAMBIARE PASSWORD ADMIN
+-----------------------
+
+La password admin si cambia da Supabase:
+
+1. Vai su Supabase
+2. Authentication
+3. Users
+4. Cerca admin@caffebarrique.it
+5. Apri l'utente
+6. Aggiorna la password
+
+
+LIMITI ATTUALI DELLA VERSIONE
+-----------------------------
+
+Questa versione e un MVP solido.
+
+Include:
+- registrazione clienti
+- login cliente/admin
+- card digitale
+- QR personale
+- check-in manuale
+- premio ogni 10 visite
+- riscatto premio e ripartenza ciclo
+- note, tag, WhatsApp
+- compleanni e inattivi
+
+Non include ancora:
+- scansione automatica QR da fotocamera
+- notifiche automatiche WhatsApp
+- email marketing automatiche
+- gestione multi-staff con permessi diversi
+- privacy/cookie policy completa
+
+
+FLUSSO CONSIGLIATO AL BANCO
+---------------------------
+
+1. Il cliente dice che fa parte del Barrique Club.
+2. Il titolare apre l'area admin dal telefono.
+3. Cerca il cliente.
+4. Apre la scheda.
+5. Segna il check-in.
+6. Se il cliente e a 10/10, consegna il premio.
+7. Premi "Riscatta premio".
+8. Il ciclo riparte da 0/10.
+
+Fine.

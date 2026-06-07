@@ -1,0 +1,69 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+  --espresso: #17110e;
+  --espresso-soft: #211813;
+  --crema: #f4eadb;
+  --vellum: #fff9ef;
+  --burgundy: #6b172b;
+  --wine: #8c2438;
+  --champagne: #c7a66a;
+  --pewter: #a79c8d;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-height: 100%;
+  background: var(--espresso);
+}
+
+body {
+  min-height: 100%;
+  margin: 0;
+  background:
+    radial-gradient(circle at 20% 0%, rgba(107, 23, 43, 0.22), transparent 28rem),
+    linear-gradient(140deg, #130e0b 0%, #1b120f 42%, #251914 100%);
+  color: var(--crema);
+  font-family: var(--font-body), Georgia, serif;
+}
+
+body::before {
+  pointer-events: none;
+  content: "";
+  position: fixed;
+  inset: 0;
+  opacity: 0.18;
+  background-image:
+    linear-gradient(rgba(255, 249, 239, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 249, 239, 0.035) 1px, transparent 1px);
+  background-size: 44px 44px;
+  mask-image: linear-gradient(to bottom, black, transparent 70%);
+}
+
+::selection {
+  background: rgba(199, 166, 106, 0.35);
+}
+
+input,
+select,
+textarea,
+button {
+  font: inherit;
+}
+
+.barrique-panel {
+  border: 1px solid rgba(199, 166, 106, 0.24);
+  background: rgba(31, 23, 19, 0.82);
+  box-shadow: inset 0 1px 0 rgba(255, 249, 239, 0.08), 0 24px 80px rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(18px);
+}
+
+.gold-line {
+  background: linear-gradient(90deg, transparent, rgba(199, 166, 106, 0.72), transparent);
+}
